@@ -30,13 +30,65 @@ def handle_hello():
 
     # this is how you can use the Family datastructure by calling its methods
     members = jackson_family.get_all_members()
+    response_body = members
+
+
+    return jsonify(response_body), 200
+
+@app.route('/member', methods=['POST'])
+def add_member():
+    body = request.get_json()
+    new_member = {
+        "id": body['id'],
+        "first_name": body['first_name'],
+        "age": body['age'],
+        "lucky_numbers": body['lucky_numbers']
+    }
+
+    # this is how you can use the Family datastructure by calling its methods
+    member = jackson_family.add_member(new_member)
     response_body = {
-        "hello": "world",
-        "family": members
+        "msg": "Done, Member Added"
     }
 
 
     return jsonify(response_body), 200
+
+@app.route('/member/<int:id>', methods=['GET'])
+def get_member_id(id):
+
+    # this is how you can use the Family datastructure by calling its methods
+    members = jackson_family.get_all_members()
+    member = next((member for member in members if member['id'] == id), None)
+    print(next)
+
+ 
+    return jsonify(member), 200
+
+@app.route('/member/<int:id>', methods=['DELETE'])
+def delete_member_id(id):
+
+    # this is how you can use the Family datastructure by calling its methods
+    members = jackson_family.get_all_members()
+    member = next((member for member in members if member['id'] == id), None)
+    
+    if member:
+        members.remove(member)
+        
+        response = {
+            "done": True
+            }
+        
+        return jsonify(response), 200
+    elif member:
+        response = {
+            "mistake": "Check it again"
+            }
+        return jsonify(response), 400
+    else:
+        response = {'error': 'Miembro no encontrado'}
+        return jsonify(response), 404
+    
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
